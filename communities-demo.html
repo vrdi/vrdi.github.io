@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Show drawn polygon area</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+  </head>
+  <body>
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.min.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.0/mapbox-gl-geocoder.css' type='text/css' />
+
+  <style>
+    /*.calculation-box {
+      height: 75px;
+      width: 150px;
+      position: absolute;
+      bottom: 40px;
+      left: 10px;
+      background-color: rgba(255, 255, 255, .9);
+      padding: 15px;
+      text-align: center;
+    }*/
+
+    p {
+      font-family: 'Open Sans';
+      margin: 0;
+      font-size: 13px;
+    }
+
+    .mapboxgl-ctrl-group .mapboxgl-ctrl-compass {
+      display: none;
+    }
+
+    #menu {
+      position: absolute;
+      background: #fff;
+      padding: 10px;
+      font-family: 'Open Sans', sans-serif;
+    }
+  </style>
+
+  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css' type='text/css'/>
+  <div id='map'></div>
+  <div id='menu'>
+    <input id='streets-v11' type='radio' name='rtoggle' value='streets' checked='checked'>
+    <label for='streets'>streets</label>
+    <input id='dark-v10' type='radio' name='rtoggle' value='dark'>
+    <label for='dark'>dark</label>
+    <input id='satellite-v9' type='radio' name='rtoggle' value='satellite'>
+    <label for='satellite'>satellite</label>
+  </div>
+  <!--<div class='calculation-box'>-->
+  <p>Draw a polygon using the draw tools.</p>
+  <!--<div id='calculated-area'></div>-->
+  </div>
+
+  <script>
+  mapboxgl.accessToken = 'pk.eyJ1Ijoicm9sbGluc2FjbSIsImEiOiJjam1pNDJnazEwMTJ2M3Fwa3ZwdmJpajJnIn0.wa86Aavjt4g77bJmgKiKsw';
+  /* eslint-disable */
+  var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/mapbox/streets-v11', //hosted style id
+    center: [-71.121545, 42.404132], // starting position
+    zoom: 13 // starting zoom
+  });
+
+  var draw = new MapboxDraw({
+    displayControlsDefault: false,
+    controls: {
+      polygon: true,
+      trash: true
+  }
+  });
+
+  var gc = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    mapboxgl: mapboxgl
+  });
+  map.addControl(gc);
+  map.addControl(draw);
+  //map.addControl(new mapboxgl.NavigationControl());
+  map.addControl(new mapboxgl.NavigationControl({position:'top-left' }));
+  // Disable map rotation using right click + drag
+  map.dragRotate.disable();
+
+  // Disable map rotation using touch rotation gesture
+  map.touchZoomRotate.disableRotation();
+
+  gc.on('result', handleGC)
+  /*map.on('draw.create', updateArea);
+  map.on('draw.delete', updateArea);
+  map.on('draw.update', updateArea);
+  */
+
+  var map_layer = {
+    "id": "precincts",
+    "type": "line",
+    "source": {
+      type: 'vector',
+      url: 'mapbox://districtr.ma_precincts_12_16'
+    },
+    "source-layer": "ma_precincts_12_16",
+    "layout": {
+      "line-join": "round",
+      "line-cap": "round"
+    },
+    "paint": {
+      "line-color": "#ff69b4",
+      "line-width": 1.5
+    }
+  }
+
+  //add vector tileset
+  map.on('load', function () {
+    map.addLayer(map_layer);
+  });
+
+  //stuff for changing map
+  var layerList = document.getElementById('menu');
+  var inputs = layerList.getElementsByTagName('input');
+
+  function switchLayer(layer) {
+    var layerId = layer.target.id;
+    map.setStyle('mapbox://styles/mapbox/' + layerId);
+
+    map.once('styledata', function() {
+      map.addLayer(map_layer);
+    });
+  }
+
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].onclick = switchLayer;
+  }
+
+  function handleGC(e){
+    var popup = new mapboxgl.Popup({ offset: 25 })
+      .setText('Construction on the Washington Monument began in 1848.');
+    var marker = new mapboxgl.Marker()
+      .setLngLat(e.result.center)
+      .setPopup(popup) // sets a popup on this marker
+      .addTo(map);
+  }
+
+/*
+  function updateArea(e) {
+    var data = draw.getAll();
+    var answer = document.getElementById('calculated-area');
+    if (data.features.length > 0) {
+      var area = turf.area(data);
+      // restrict to area to 2 decimal points
+      var rounded_area = Math.round(area*100)/100;
+      answer.innerHTML = '<p><strong>' + rounded_area + '</strong></p><p>square meters</p>';
+    } else {
+      answer.innerHTML = '';
+      if (e.type !== 'draw.delete') alert("Use the draw tools to draw a polygon!");
+    }
+  }
+*/
+
+  </script>
+  </body>
+</html>
