@@ -15,6 +15,7 @@
 
       gtag("config", "UA-128973402-1");
   </script>
+  <script src="https://deploy-preview-59--districtr.netlify.com/es6/embedded.js"></script>
   <title>
   	What is redistricting? 
         | Metric Geometry and Gerrymandering Group
@@ -26,7 +27,9 @@
       name="description"
       content="A nonpartisan research organization studying applications of geometry and computing to U.S. redistricting."
       /> 
-    <link rel="canonical" href="https://mggg.org/distflow/" />
+    <link rel="canonical" href="https://vrdi.github.io/outlier" />
+    <link rel="stylesheet" type="text/css" media="screen" href="https://deploy-preview-59--districtr.netlify.com/css/embedded.css">
+
     <link
 href="https://fonts.googleapis.com/css?family=Playfair+Display:700|Lora:400,400i,700|Source+Sans+Pro:300,400"
 rel="stylesheet"
@@ -80,7 +83,10 @@ img {
   margin-right: auto;
 }
 </style>
- 
+  <link href="https://api.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous"> 
 </head>
 
 <body>
@@ -275,9 +281,8 @@ img {
     explore this plan (which is actually the current NC Congressional plan) by using Districtr:
     </p>
     
-    <p align="justify">
-    [insert Districtr box here]
-    </p>
+    <h3><a href="https://districtr.org/edit?url=/assets/plans/districtr-plan-nc.json">Explore the NC Congressional plan in Districtr.</a></h3>
+    <div id="districtr-box" style="height: 600px; width: 100%; margin: 2rem 0;"></div>
     
     <p align="justify">
     Go to the "Evaluation" tab and take a look at “Partisan Balance.” This shows us the percentages of Democrats and Republicans in each of the 13 Congressional districts. 
@@ -324,7 +329,11 @@ img {
     <p align="justify">
     In <i>Rucho v. Common Cause</i>, the plaintiffs did a similar analysis. They generated a large number of districting plans using <b>MCMC</b> and then examined individual districts within those plans. 
     </p>
-    
+    <script>
+        window.Districtr("districtr-box", {
+            url: "https://districtr.org/assets/plans/districtr-plan-nc.json"
+        });
+    </script>
 </body>
 </html>
 
