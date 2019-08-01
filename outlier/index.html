@@ -15,6 +15,9 @@
 
       gtag("config", "UA-128973402-1");
   </script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/topojson.v1.min.js"></script>
+  <script src="chain.js"></script>
   <script src="https://deploy-preview-59--districtr.netlify.com/es6/embedded.js"></script>
   <title>
   	What is redistricting? 
@@ -29,12 +32,12 @@
       /> 
     <link rel="canonical" href="https://vrdi.github.io/outlier" />
     <link rel="stylesheet" type="text/css" media="screen" href="https://deploy-preview-59--districtr.netlify.com/css/embedded.css">
-
     <link
 href="https://fonts.googleapis.com/css?family=Playfair+Display:700|Lora:400,400i,700|Source+Sans+Pro:300,400"
 rel="stylesheet"
 />
 <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="chain.css" />
 <link
 rel="stylesheet"
 href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css"
@@ -136,17 +139,14 @@ img {
   		</p>
       
       <img src="pic1.png" alt="from Wahingtonpost" style="width:70%">
+    
       
       <p align="justify">
-      (from <a href="https://www.washingtonpost.com/news/wonk/wp/2015/03/01/this-is-the-best-explanation-of-gerrymandering-you-will-ever-see/?noredirect=on&utm_term=.15b8429d3135">Washington Post</a>)
-      </p>
-      
-      <p align="justify">
-      Although blues outnumber reds, the reds still win an extra district in the rightmost plan. The districts won by the blues
-      are an example of packing: there are 9 blue and one red node in each. This is far more blue voters than are actually
-      required to win. Conversely, the other three districts have only 6 red voters each, which is the bare minimum number needed
-      to win. By cramming the blues into those two districts on the right and denying them a majority in the three leftmost 
-      districts, the reds have effectively packed and cracked here.
+      Although reds outnumber the blues, the blues still win an extra district in the rightmost plan. The districts won by the reds
+      are an example of packing: there are four red and one blue node in each — more red voters than are actually
+      required to win. Conversely, the other three districts have only three blue voters each, which is the bare minimum number needed
+      to win. By cramming the reds into those two districts on the right and denying them a majority in the three leftmost 
+      districts, the blues have effectively packed and cracked here.
       </p>
 
   		<p align="justify">
@@ -174,8 +174,11 @@ img {
       Both of these metrics have major disadvantages, but they can help us understand the idea of outlier analysis. For 
       this example, let’s stick to thinking about Mean-Median.
       </p>
-      
-      <img src="pic11.png" alt="from Wahingtonpost" style="width:70%">
+
+      <figure>
+          <img src="pic11.png" alt="from Wahingtonpost" style="width:70%">
+          <figcaption>A proposed Pennsylvania redistricting plan.</figcaption>
+      </figure>
       
       <p align="justify">
       The Mean-Median score for the above districting plan for Pennsylvania’s 2016 Senate race is -0.046. Does this number seem big or small to you?
@@ -203,36 +206,49 @@ img {
       are over 6 feet tall, but most of the people you’ve met are somewhere between 5 and 6 feet tall. If you were to plot how many
       people you know at each height, the picture (called a histogram) would look something like this:
       </p>
-      
-      <img src="pic2.svg" alt="normalDisForHeight" style="width:70%">
+
+      <figure>
+          <img src="pic2.svg" alt="normalDisForHeight" style="width:70%">
+          <figcaption>The distribution of human heights (in feet).</figcaption>
+      </figure>
       
       <p align="justify">
-      When your friend tells you they’re 7 feet tall, you decide they’re lying. You know this because you had <b>context</b> for that numerical
-      answer. But if you didn’t know anything about how tall most people are, you would have no idea if your friend was lying. Unlike height,
-      most people don’t have a good sense of EG’s, or of any partisan metric in general! For any state, you really have no idea which EG’s are
-      common and which are rare; you couldn’t draw a histogram of efficiency gap values.
+      When your friend tells you they’re 7 feet tall, you decide they’re lying. You know this because you had context for that numerical answer. But if you didn’t
+      know how tall most people are, you wouldn’t be able to make that determination. This is the problem with any given partisan metric: nobody has any idea which
+      outcomes are common and which are rare for a particular state, at least not without further research.
       </p>
       
       <h3> Large numbers of plans </h3>
       <p align="justify">
-      Just like you needed to know many people’s heights in order to understand how rare 7 feet is, you’ll need a lot of different districting
-      plans for your state to understand which EGs are most common. Consider Iowa. There’s actually a <b>quintillion</b> different ways to split the state
-      of Iowa into 4 Congressional districts! If you can find 10,000 of them and be confident that they are representative of the whole population,
-      you can use those 10,000 to get a sense for the distribution of EGs over possible Iowa districting plans.
+      Just like you needed to know many people’s heights in order to understand how rare 7 feet is, you’ll need to consider many different districting plans for your
+      state in order to understand which Mean-Median scores are most common. Consider Pennsylvania. There are actually <b>quintillions</b> of different ways to split Pennsylvania
+      into 18 Congressional districts! If you can find around 10,000 of these distinct plans and be confident that they are representative of the universe of all possible
+      plans, you can use those 10,000 maps to get a sense for the distribution of Mean-Median scores in Pennsylvania.
       </p>
       
       <p align="justify">
       Rather than drawing thousands of plans by hand, you can use a computer algorithm called <b>Markov Chain Monte Carlo (MCMC)</b> to sample the plans
       and build a histogram. Try it out below!
       </p>
-      
+      </section>
+
+      <div class="pa-chart two-columns">
+          <h2>Sampling districting plans in Pennsylvania</h2>
+          <p>The MCMC algorithm discovers a variety of districting plans with a range of election outcomes.</p>
+          <div class="pa-chart-interactives">
+            <div id="interactive-chain"></div>
+            <div id="chain-hist"></div>
+          </div>
+      </div>
+
+      <section>
       <p align="justify">
-      Now you can see how your districting plan compares to other possible districting plans. This method helps you judge your efficiency gap <b>in the context</b>
-      of other ones — just like you used your knowledge of how tall the average person is to decide your friend was lying to you.
+      Now you can see how your districting plan compares to other possible districting plans. This method helps you judge your gerrymandering score <b>in the context</b>
+      of other ones — just like you did with your friend's height.
       </p>
       
       <p align="justify">
-      This type of thinking is called <b>outlier analysis</b>, and it works for any partisan metric, not just the efficiency gap. There’s no metric out there that can
+      This type of thinking is called <b>outlier analysis</b>, and it works for any partisan metric, not just the Mean-Median. There’s no metric out there that can
       tell us with just a single number if a plan has been gerrymandered; we always need to consider these numbers in their contexts. If you find that a plan is
       an outlier compared to other possible plans for a given state, then you have good reason to be suspicious. 
       </p>
@@ -244,7 +260,10 @@ img {
       by the red line, an outlier? What about a score of -0.065, shown by the green line?
       </p>
 
-    <img src="pic3.svg" alt="Snow" style="width:70%">
+    <figure>
+        <img src="pic3.svg" alt="Snow" style="width:70%">
+        <figcaption>A distribution of mean-median scores from an ensemble of districting plans.</figcaption>
+    </figure>
     
     <p align="justify">
     Now that you have a sense of the distribution of Mean-Median scores, can you use it to provide context for a districting plan in any state, for any election? Unfortunately, no.
@@ -257,15 +276,21 @@ img {
     than the general population. Check out how their height distributions differ!
     </p>
 
-    <img src="pic4.svg" alt="Snow" style="width:70%">
+    <figure>
+        <img src="pic4.svg" alt="Snow" style="width:70%">
+        <figcaption>The distribution of typical human heights <strong style="color:blue">(blue)</strong> and the heights of NBA players <strong style="color:red">(red)</strong>.</figcaption>
+    </figure>
 
    <p align="justify">
    As an example, we see below that Virginia has a different distribution of Mean-Median scores than Pennsylvania. A Mean-Median score of -0.045 isn’t an outlier with respect to the 2016
    Pennsylvania Senate race, but it would be an outlier for Virginia’s 2018 Senate race. Without looking carefully at the specifics of the state we want to analyze, we can’t use the metrics
    to make any meaningful claims about gerrymandering.
    </p> 
-   
-   <img src="pic5.svg" alt="Snow" style="width:70%">
+
+   <figure>
+       <img src="pic5.svg" alt="Snow" style="width:70%">
+       <figcaption>The distributions of mean-median scores for an ensemble of plans in Pennsylvania <strong style="color:blue">(blue)</strong> and an ensemble of plans in Virginia <strong style="color:red">(red)</strong>.</figcaption>
+    </figure>
     
     <h3> Exercise: North Carolina </h3>
     <p align="justify">
@@ -284,6 +309,7 @@ img {
     <h3><a href="https://districtr.org/edit?url=/assets/plans/districtr-plan-nc.json">Explore the NC Congressional plan in Districtr.</a></h3>
     <div id="districtr-box" style="height: 600px; width: 100%; margin: 2rem 0;"></div>
     
+    
     <p align="justify">
     Go to the "Evaluation" tab and take a look at “Partisan Balance.” This shows us the percentages of Democrats and Republicans in each of the 13 Congressional districts. 
     <ul>
@@ -301,8 +327,11 @@ img {
     most common. Population balance means that all districts should have roughly equal populations. Contiguity means that the districts are not split up into multiple parts that
     don’t touch each other. In the map for Iowa below, the yellow and blue districts are contiguous, but the green district is not.
     </p>
-    
-    <img src="pic10.png" alt="some districting maps" style="width:70%">
+
+    <figure>
+        <img src="pic10.png" alt="some districting maps" style="width:70%">
+        <figcaption>This Iowa districting plan is invalid because it contains a non-contiguous district <strong style="color:#91a840">(green)</strong>.</figcaption>
+    </figure>
     
     <p align="justify">
     As the NYT notes, this plan splits several major cities across two districts. Let’s put the cities into some new districts.
