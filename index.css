@@ -121,20 +121,32 @@ nav {
   align-content: center;
 }
 .box-03 .inner {
-	background-image: url('/Users/kristenakey/Documents/GitHub/vrdi.github.io/background_images/iowa_recom.png');
-	background-position: 50% 50%;
-	background-repeat: no-repeat;
+	background-image: url('/Users/kristenakey/Documents/GitHub/vrdi.github.io/background_images/iowa_viz.png');
+	background-position: 60% 10%;
+  background-repeat: no-repeat;
 	background-size: cover;
   width: 45%;
   float: left;
   align-content: center;
+  background-color: white;
 }
 
 .box-04 .inner {
 	background-image: url('/Users/kristenakey/Documents/GitHub/vrdi.github.io/background_images/cut.png');
-	background-position: 50% 50%;
+ 	background-position: 50% 50%;
 	background-repeat: no-repeat;
 	background-size: 650px;
+    width: 45%;
+    float: left;
+    align-content: center;
+  background-color: white;
+}
+
+.box-05 .inner {
+	background-image: url('/Users/kristenakey/Documents/GitHub/vrdi.github.io/background_images/metagraph.png');
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+  background-size: 500px;
     width: 45%;
     float: left;
     align-content: center;
